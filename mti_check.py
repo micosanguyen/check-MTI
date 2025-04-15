@@ -37,7 +37,7 @@ def check_domain_bmh(bmh_accounts):
         return None
 
     for acc in bmh_accounts:
-        domains = ["bmh.mbageas.life", "bangminhhoa.mbageas.life"]
+        domains = ["bmh.mbageas.life", "bangminhhoa.mbageas.life", "daotao.mbageas.life", "training.mbageas.life"]
         if any(domain in acc.get("x_opencti_description", "") for domain in domains):
         # if "bmh.mbageas.life" in acc.get("x_opencti_description", "") or "bangminhhoa.mbageas.life" in acc.get("x_opencti_description", ""):
             username = acc.get("account_login")
@@ -99,7 +99,7 @@ def check_domain_daily(daily_accounts):
     url = "https://daily.mbageas.life/api/v2/sale_auth/sign_in"
 
     for acc in daily_accounts:
-        domains = ["daily.mbageas.life"]
+        domains = ["daily.mbageas.life", "salesportal.mbageas.life"]
         if any(domain in acc.get("x_opencti_description", "") for domain in domains):
         # if "bmh.mbageas.life" in acc.get("x_opencti_description", "") or "bangminhhoa.mbageas.life" in acc.get("x_opencti_description", ""):
             username = acc.get("account_login")
@@ -150,7 +150,7 @@ def check_domain_banca(banca_accounts):
     url = "https://banca.mbageas.life/api/v2/sale_auth/sign_in"
 
     for acc in banca_accounts:
-        domains = ["banca.mbageas.life"]
+        domains = ["banca.mbageas.life", "salesportal.mbageas.life"]
         if any(domain in acc.get("x_opencti_description", "") for domain in domains):
         # if "bmh.mbageas.life" in acc.get("x_opencti_description", "") or "bangminhhoa.mbageas.life" in acc.get("x_opencti_description", ""):
             username = acc.get("account_login")
@@ -199,10 +199,54 @@ def check_domain_banca(banca_accounts):
                 except ValueError:
                     print(f"Response không phải JSON: {response.text}")
 
+def check_domain_kh(kh_accounts):
+    url = "https://apikhachhang.mbageas.life/v1/auth/login"
+
+    for acc in kh_accounts:
+        domains = ["kh.mbageas.life", "khachhang.mbageas.life"]
+        if any(domain in acc.get("x_opencti_description", "") for domain in domains):
+        # if "bmh.mbageas.life" in acc.get("x_opencti_description", "") or "bangminhhoa.mbageas.life" in acc.get("x_opencti_description", ""):
+            username = acc.get("account_login")
+            password = acc.get("credential")
+            print("\nLogin URL: " + url)
+            print(f"Account: {username} / {password}")
+
+            headers = {
+                "Accept": "application/json, text/plain, */*",
+                "Content-Type": "application/json",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.5938.63 Safari/537.36",
+                "Origin": "https://khachhang.mbageas.life",
+                "Referer": "https://khachhang.mbageas.life/"
+            }
+
+
+            data = {
+                "userName": username,
+                "password": password,
+                "browser": "Web - chrome"
+            }
+
+            with requests.Session() as session:
+                session.headers.update(headers)
+                response = session.post(url, json=data)
+
+                try:
+                    res_json = response.json()
+                    msg = res_json.get("data", {}).get("msg", "No response reason, maybe valid")
+
+                    if msg in [None, "None"]:
+                        print(("No response reason, maybe valid"))
+                    else:
+                        print(f"Message: {msg}")
+                except Exception as e:
+                    print("Can't parse response JSON:")
+                    print(response.text)
 
 check_domain_bmh(accounts)
-print("===================================================")
+print("==============================================================================================================")
 check_domain_daily(accounts)
-print("===================================================")
+print("==============================================================================================================")
 check_domain_banca(accounts)
-print("===================================================")
+print("==============================================================================================================")
+check_domain_kh(accounts)
+print("==============================================================================================================")
