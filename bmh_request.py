@@ -21,9 +21,6 @@ def extract_xsrf_token_from_html(html):
     return None
 
 
-
-session = requests.Session()
-
 for acc in accounts:
     if "bmh.mbageas.life" in acc.get("x_opencti_description", ""):
         username = acc.get("account_login")
@@ -32,6 +29,7 @@ for acc in accounts:
 
         try:
             # GET request retrieve token & cookie
+            session = requests.Session()
             get_response = session.get(url, timeout=10, verify=False)
             xsrf_token = extract_xsrf_token_from_html(get_response.text)
 
